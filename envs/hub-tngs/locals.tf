@@ -5,7 +5,6 @@ locals {
   resource_group_network_name = "rg-${local.suffix}-network"
 
   vnet_name = "vnet-${local.suffix}"
-  nsg_name  = "nsg-${local.suffix}"
 
   tags = merge(var.tags, {
     environment = var.environment

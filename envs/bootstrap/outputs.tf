@@ -9,3 +9,8 @@ output "storage_account_name" {
 output "containers" {
   value = { for k, v in azurerm_storage_container.tfstate : k => v.name }
 }
+
+output "enable_nsp" {
+  description = "Whether NSP feature toggle is enabled in this stack configuration"
+  value       = var.enable_nsp
+}
