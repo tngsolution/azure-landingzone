@@ -113,27 +113,3 @@ variable "app_configuration_name" {
   type        = string
   default     = null
 }
-
-variable "admin_group_name" {
-  description = "Admin Entra group display name to store in App Configuration"
-  type        = string
-  default     = null
-}
-
-variable "admin_group_object_id" {
-  description = "Admin Entra group object ID to store in App Configuration"
-  type        = string
-  default     = null
-}
-
-variable "app_configuration_values" {
-  description = "Additional key-values to store in App Configuration"
-  type        = map(string)
-  default     = {}
-}
-
-variable "app_configuration_rbac_propagation_wait" {
-  description = "Delay to wait after RBAC assignment before creating App Configuration keys"
-  type        = string
-  default     = "180s"
-}

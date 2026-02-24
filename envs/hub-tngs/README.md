@@ -29,8 +29,6 @@ Key variables:
 - subnet prefixes (`gateway`, `firewall`, `bastion`, `management`)
 - `nsg_rules`
 - `app_configuration_enabled`, `app_configuration_name`
-- `admin_group_name`, `admin_group_object_id`
-- `app_configuration_values`
 
 ## Prerequisites
 - Azure login in the hub/platform subscription

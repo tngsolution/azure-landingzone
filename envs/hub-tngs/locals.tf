@@ -8,13 +8,6 @@ locals {
 
   vnet_name = "vnet-${local.suffix}"
 
-  app_configuration_entries = merge(
-    var.subscription_id != null ? { "metadata/subscription_id" = var.subscription_id } : {},
-    var.admin_group_name != null ? { "security/admin_group_name" = var.admin_group_name } : {},
-    var.admin_group_object_id != null ? { "security/admin_group_object_id" = var.admin_group_object_id } : {},
-    var.app_configuration_values
-  )
-
   tags = merge(var.tags, {
     environment = var.environment
     team        = var.team
