@@ -18,36 +18,36 @@ The project is organized into reusable modules and environment stacks, with supp
 ### Landing Zone Diagram
 ```mermaid
 flowchart LR
-    BOOT[Bootstrap\nRG + Storage Account + tfstate containers]
-    POL[Global Policies\nManagement Group assignments]
+    BOOT[Bootstrap tfstate]
+    POL[Global Policies]
 
     HUBRG[Hub RG]
     HUBNET[Hub VNet]
-    HUBCFG[Hub App Configuration\n*-config RG]
+    HUBCFG[Hub App Configuration]
 
-    DEV[Spoke DEV VNet]
-    STG[Spoke STG VNet]
-    PRD[Spoke PRD VNet]
+    DEV[Spoke DEV]
+    STG[Spoke STG]
+    PRD[Spoke PRD]
 
-    AKSDEV[AKS DEV cluster(s)]
-    AKSSTG[AKS STG cluster(s)]
-    AKSPRD[AKS PRD cluster(s)]
+    AKSDEV[AKS DEV]
+    AKSSTG[AKS STG]
+    AKSPRD[AKS PRD]
 
     BOOT --> HUBRG
     BOOT --> DEV
     BOOT --> STG
     BOOT --> PRD
-    POL -. applies .-> HUBRG
-    POL -. applies .-> DEV
-    POL -. applies .-> STG
-    POL -. applies .-> PRD
+    POL -.-> HUBRG
+    POL -.-> DEV
+    POL -.-> STG
+    POL -.-> PRD
 
     HUBRG --> HUBNET
     HUBRG --> HUBCFG
 
-    DEV <-->|Peering bi-directional| HUBNET
-    STG <-->|Peering bi-directional| HUBNET
-    PRD <-->|Peering bi-directional| HUBNET
+    DEV --- HUBNET
+    STG --- HUBNET
+    PRD --- HUBNET
 
     DEV --> AKSDEV
     STG --> AKSSTG
