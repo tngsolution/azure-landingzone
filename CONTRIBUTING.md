@@ -21,6 +21,35 @@ make az-switch
 make az-whoami
 ```
 
+## Tool Installation
+Recommended versions:
+- Terraform `1.9.x`
+- Azure CLI `2.8x+`
+
+macOS (Homebrew):
+```bash
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform azure-cli make python
+```
+
+Ubuntu/Debian:
+```bash
+sudo apt-get update
+sudo apt-get install -y gnupg software-properties-common curl make python3
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo \"deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt-get update && sudo apt-get install -y terraform
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+```
+
+Verify:
+```bash
+terraform version
+az version
+make --version
+python3 --version
+```
+
 ## Branching and Commits
 - Create a dedicated branch per change.
 - Keep commits focused and atomic.

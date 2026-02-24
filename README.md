@@ -22,6 +22,37 @@ The project is organized into reusable modules and environment stacks, with supp
 - `docs/`: operational documentation and runbooks
 - `Makefile`: common operational commands
 
+## Tooling Setup
+Required tools:
+- Terraform (recommended: `1.9.x`)
+- Azure CLI (recommended: `2.8x+`)
+- GNU Make
+- Python 3 (used by generation scripts)
+
+macOS (Homebrew):
+```bash
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform azure-cli make python
+```
+
+Ubuntu/Debian:
+```bash
+sudo apt-get update
+sudo apt-get install -y gnupg software-properties-common curl make python3
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo \"deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt-get update && sudo apt-get install -y terraform
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+```
+
+Version check:
+```bash
+terraform version
+az version
+make --version
+python3 --version
+```
+
 ## Stack Documentation
 
 Contribution guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
