@@ -1,0 +1,26 @@
+# Global fallback
+* @tngsolution/platform-team
+
+# Core documentation and process
+/README.md @tngsolution/platform-team
+/CONTRIBUTING.md @tngsolution/platform-team
+/docs/ @tngsolution/platform-team
+/.github/ @tngsolution/platform-team
+
+# Terraform stacks
+/envs/bootstrap/ @tngsolution/platform-team
+/envs/hub-tngs/ @tngsolution/platform-team
+/envs/spoke/ @tngsolution/network-team @tngsolution/platform-team
+/envs/peering/ @tngsolution/network-team @tngsolution/platform-team
+/global-policies/ @tngsolution/security-team @tngsolution/platform-team
+
+# Reusable modules
+/modules/networking/ @tngsolution/network-team
+/modules/peering/ @tngsolution/network-team
+/modules/policy/ @tngsolution/security-team
+/modules/management-groups/ @tngsolution/security-team
+/modules/ @tngsolution/platform-team
+
+# Tooling
+/scripts/ @tngsolution/platform-team
+/Makefile @tngsolution/platform-team
