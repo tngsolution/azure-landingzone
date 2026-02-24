@@ -1,0 +1,51 @@
+workload       = "{{ workload }}"
+environment    = "{{ environment }}"
+location       = "{{ location }}"
+location_short = "{{ location_short }}"
+instance       = "{{ instance }}"
+subscription_id = "{{ subscription_id }}"
+
+resource_group_name         = "{{ resource_group_name }}"
+team    = "{{ team }}"
+project = "{{ project }}"
+
+address_space = ["{{ address_space }}"]
+
+subnets = {
+  "snet-aks-tngs-{{ environment }}-{{ location_short }}-{{ instance }}" = {
+    address_prefixes                = ["{{ aks_subnet_prefix }}"]
+    default_outbound_access_enabled = false
+  }
+  "snet-app-tngs-{{ environment }}-{{ location_short }}-{{ instance }}" = {
+    address_prefixes                = ["{{ app_subnet_prefix }}"]
+    default_outbound_access_enabled = false
+  }
+  "snet-data-tngs-{{ environment }}-{{ location_short }}-{{ instance }}" = {
+    address_prefixes                = ["{{ data_subnet_prefix }}"]
+    service_endpoints               = ["Microsoft.Sql", "Microsoft.Storage"]
+    default_outbound_access_enabled = false
+  }
+}
+
+nsg_rules = [
+  "AllowBastionSSH|100|Inbound|Allow|Tcp|*|22|10.0.2.0/26|*",
+  "AllowBastionRDP|110|Inbound|Allow|Tcp|*|3389|10.0.2.0/26|*",
+  "AllowHubMgmt|120|Inbound|Allow|*|*|*|10.0.3.0/24|*",
+  "AllowSpokeInternal|130|Inbound|Allow|*|*|*|{{ address_space }}|*",
+  "AllowHTTP|200|Inbound|Allow|Tcp|*|80|10.0.0.0/8|*",
+  "AllowHTTPS|210|Inbound|Allow|Tcp|*|443|10.0.0.0/8|*",
+  "DenyInternetInbound|4000|Inbound|Deny|*|*|*|Internet|*",
+]
+
+tags = {
+  owner       = "network-team"
+  team        = "{{ team }}"
+  cost_center = "it-infra"
+  project     = "{{ project }}"
+  environment = "{{ environment }}"
+  env         = "{{ environment }}"
+  criticality = "{{ criticality }}"
+  data_class  = "internal"
+  managed_by  = "terraform"
+  repo        = "github.com:tngsolution/azure-landingzone.git"
+}

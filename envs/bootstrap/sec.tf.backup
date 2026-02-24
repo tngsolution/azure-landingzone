@@ -1,0 +1,39 @@
+# Network Security Perimeter
+resource "azurerm_network_security_perimeter" "tfstate" {
+  name                = "nsp-tfstate-${local.suffix}"
+  resource_group_name =  azurerm_resource_group.tfstate.name
+  location            = var.location
+  tags                = local.tags
+}
+
+# Associer le storage account au périmètre
+resource "azurerm_network_security_perimeter_resource_association" "tfstate" {
+  name                          = "nsp-assoc-tfstate-${local.suffix}"
+  network_security_perimeter_id = azurerm_network_security_perimeter.tfstate.id
+  resource_id                   = azurerm_storage_account.tfstate.id
+  private_link_access_mode      = "Enforced"
+}
+
+# Profil de sécurité
+resource "azurerm_network_security_perimeter_profile" "tfstate" {
+  name                          = "nsp-profile-tfstate-${local.suffix}"
+  network_security_perimeter_id = azurerm_network_security_perimeter.tfstate.id
+}
+
+# Règle inbound — autoriser les IPs des devs
+resource "azurerm_network_security_perimeter_access_rule" "allow_devs" {
+  name                                      = "allow-devs"
+  network_security_perimeter_profile_id     = azurerm_network_security_perimeter_profile.tfstate.id
+  direction                                 = "Inbound"
+
+  address_prefixes = var.allowed_ip_rules
+}
+
+# Règle inbound — autoriser Azure DevOps / GitHub Actions
+resource "azurerm_network_security_perimeter_access_rule" "allow_azure_services" {
+  name                                      = "allow-azure-services"
+  network_security_perimeter_profile_id     = azurerm_network_security_perimeter_profile.tfstate.id
+  direction                                 = "Inbound"
+
+  service_tags = ["AzureCloud"]
+}
