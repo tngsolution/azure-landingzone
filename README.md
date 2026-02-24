@@ -108,6 +108,7 @@ See `make help` for full command list.
 
 ## Governance and Contribution
 - Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Security policy: [SECURITY.md](SECURITY.md)
 - Code ownership rules: [.github/CODEOWNERS](.github/CODEOWNERS)
 - PR template: [.github/pull_request_template.md](.github/pull_request_template.md)
 - Issue templates: [.github/ISSUE_TEMPLATE](.github/ISSUE_TEMPLATE)
