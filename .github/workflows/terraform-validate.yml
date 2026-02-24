@@ -1,14 +1,29 @@
-name: Terraform Validate
+name: Terraform Lint and Validate
 
 on:
   pull_request:
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - ".github/workflows/terraform-validate.yml"
   push:
     branches:
       - main
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - ".github/workflows/terraform-validate.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-validate-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
-    name: Validate (${{ matrix.stack }})
+    name: Checks (${{ matrix.stack }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -30,11 +45,55 @@ jobs:
         with:
           terraform_version: 1.9.8
 
-      - name: Terraform fmt check
-        run: terraform -chdir=${{ matrix.stack }} fmt -check -recursive
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
 
-      - name: Terraform init (no backend)
-        run: terraform -chdir=${{ matrix.stack }} init -backend=false -input=false
+      - name: Run Terraform checks
+        shell: bash
+        run: |
+          set +e
+          STACK="${{ matrix.stack }}"
 
-      - name: Terraform validate
-        run: terraform -chdir=${{ matrix.stack }} validate
+          terraform -chdir="${STACK}" fmt -check -recursive > fmt.log 2>&1
+          FMT_EXIT=$?
+
+          terraform -chdir="${STACK}" init -backend=false -input=false > init.log 2>&1
+          INIT_EXIT=$?
+
+          terraform -chdir="${STACK}" validate > validate.log 2>&1
+          VALIDATE_EXIT=$?
+
+          tflint --chdir="${STACK}" --format compact > tflint.log 2>&1
+          TFLINT_EXIT=$?
+
+          STATUS_FMT="✅"
+          STATUS_INIT="✅"
+          STATUS_VALIDATE="✅"
+          STATUS_TFLINT="✅"
+          [ "${FMT_EXIT}" -ne 0 ] && STATUS_FMT="❌"
+          [ "${INIT_EXIT}" -ne 0 ] && STATUS_INIT="❌"
+          [ "${VALIDATE_EXIT}" -ne 0 ] && STATUS_VALIDATE="❌"
+          [ "${TFLINT_EXIT}" -ne 0 ] && STATUS_TFLINT="❌"
+
+          {
+            echo "## Terraform checks: \`${STACK}\`"
+            echo ""
+            echo "| Check | Result |"
+            echo "|---|---|"
+            echo "| terraform fmt -check | ${STATUS_FMT} |"
+            echo "| terraform init -backend=false | ${STATUS_INIT} |"
+            echo "| terraform validate | ${STATUS_VALIDATE} |"
+            echo "| tflint | ${STATUS_TFLINT} |"
+            echo ""
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+          if [ "${FMT_EXIT}" -ne 0 ] || [ "${INIT_EXIT}" -ne 0 ] || [ "${VALIDATE_EXIT}" -ne 0 ] || [ "${TFLINT_EXIT}" -ne 0 ]; then
+            echo "At least one check failed for ${STACK}."
+            echo "---- fmt.log ----" && cat fmt.log
+            echo "---- init.log ----" && cat init.log
+            echo "---- validate.log ----" && cat validate.log
+            echo "---- tflint.log ----" && cat tflint.log
+            exit 1
+          fi
