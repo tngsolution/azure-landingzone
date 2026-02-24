@@ -9,3 +9,9 @@ resource "azurerm_resource_group" "network" {
   location = var.location
   tags     = local.tags
 }
+
+resource "azurerm_resource_group" "config" {
+  name     = local.resource_group_config_name
+  location = var.location
+  tags     = local.tags
+}

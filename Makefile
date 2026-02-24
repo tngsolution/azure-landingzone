@@ -15,7 +15,7 @@ CYAN   := \033[0;36m
 RESET  := \033[0m
 
 # Stacks in dependency order
-STACKS        ?= global-policies envs/hub-tngs envs/spoke envs/spoke-dev envs/spoke-prd envs/peering/hub-spokes envs/peering/spoke-hub envs/bootstrap
+STACKS        ?= global-policies envs/hub-tngs envs/spoke envs/aks envs/spoke-dev envs/spoke-prd envs/peering/hub-spokes envs/peering/spoke-hub envs/bootstrap
 DEFAULT_STACK ?= envs/hub-tngs
 STACK         ?= $(DEFAULT_STACK)
 
@@ -45,6 +45,12 @@ help:
 	@printf "  make all-fmt            Format all stacks\n"
 	@printf "  make all-validate       Validate all stacks\n"
 	@printf "  make all-clean          Remove all tfplan files\n"
+	@printf "\n"
+	@printf "$(YELLOW)Generators:$(RESET)\n"
+	@printf "  make gen-spoke       SPOKE=spoke-dev\n"
+	@printf "  make gen-spoke-hub   SPOKE=spoke-dev\n"
+	@printf "  make gen-peering\n"
+	@printf "  make gen-aks         ENVIRONMENT=dev CLUSTER_KEY=cluster-v134 KUBERNETES_VERSION=1.34\n"
 	@printf "\n"
 	@printf "$(YELLOW)Per stack:$(RESET)\n"
 	@printf "  make init     STACK=envs/hub-tngs\n"
@@ -238,6 +244,11 @@ gen-spoke-hub:
 gen-spoke:
 	@printf "$(CYAN)>>> Generating envs/spoke files$(RESET)\n"
 	@./scripts/gen-spoke.sh
+	@printf "$(GREEN)>>> Done$(RESET)\n"
+
+gen-aks:
+	@printf "$(CYAN)>>> Generating envs/aks files$(RESET)\n"
+	@./scripts/gen-aks.sh
 	@printf "$(GREEN)>>> Done$(RESET)\n"
 
 deploy-peering: gen-peering

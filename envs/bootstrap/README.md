@@ -8,7 +8,7 @@ It creates the shared storage resources used by other stacks for remote state.
 ## What This Stack Creates
 - Resource group for tfstate
 - Storage account for tfstate
-- Blob containers for stack states (for example `hub-tngs`, `spoke-dev`, `spoke-stg`, `spoke-prd`, `peering`, `hub-spokes`)
+- Blob containers for stack states (for example `hub-tngs`, `spoke-dev`, `spoke-stg`, `spoke-prd`, `aks-dev`, `aks-stg`, `aks-prd`, `peering`, `hub-spokes`)
 - Role assignment (`Storage Blob Data Contributor`) for the current principal
 
 ## Inputs

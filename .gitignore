@@ -42,6 +42,10 @@ terraform.rc
 **/.terraform/
 
 **/*-backend.hcl
+**/*.backend.hcl
 **/backend.hcl
 
 **/to-delete
+**/aks/backends
+**/aks/tfvars
+**/aks/tfplan

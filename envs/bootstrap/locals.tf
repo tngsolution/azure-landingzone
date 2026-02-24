@@ -10,6 +10,9 @@ locals {
     "spoke-dev",
     "spoke-stg",
     "spoke-prd",
+    "aks-dev",
+    "aks-stg",
+    "aks-prd",
     "peering",
     "hub-spokes",
   ]

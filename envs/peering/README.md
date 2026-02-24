@@ -62,3 +62,8 @@ Cons:
 4. Validate routes/connectivity
 
 This pattern is currently the safest and most maintainable for this repository.
+
+## AKS Considerations
+When deploying AKS into a spoke subnet (for example `snet-aks-*`), complete bidirectional peering remains required for common hub-spoke access patterns (management, shared services, private dependencies).
+
+For private AKS clusters, validate DNS and routing from the management network in addition to peering state.

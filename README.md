@@ -8,11 +8,85 @@ The project is organized into reusable modules and environment stacks, with supp
 ## Architecture
 - Hub stack: central networking and shared platform resources
 - Spoke stack (generic): reusable spoke deployment for `dev`, `stg`, `prd`
+- AKS stack: Kubernetes cluster deployed into an existing spoke subnet
 - Peering stacks:
   - `hub -> spokes` (forward peering)
   - `spoke -> hub` (return peering, per spoke)
 - Bootstrap stack: remote state storage (RG, Storage Account, blob containers)
 - Global policies stack: management group policy assignments
+
+### Landing Zone Diagram
+```mermaid
+flowchart LR
+    BOOT[Bootstrap\nRG + Storage Account + tfstate containers]
+    POL[Global Policies\nManagement Group assignments]
+
+    HUBRG[Hub RG]
+    HUBNET[Hub VNet]
+    HUBCFG[Hub App Configuration\n*-config RG]
+
+    DEV[Spoke DEV VNet]
+    STG[Spoke STG VNet]
+    PRD[Spoke PRD VNet]
+
+    AKSDEV[AKS DEV cluster(s)]
+    AKSSTG[AKS STG cluster(s)]
+    AKSPRD[AKS PRD cluster(s)]
+
+    BOOT --> HUBRG
+    BOOT --> DEV
+    BOOT --> STG
+    BOOT --> PRD
+    POL -. applies .-> HUBRG
+    POL -. applies .-> DEV
+    POL -. applies .-> STG
+    POL -. applies .-> PRD
+
+    HUBRG --> HUBNET
+    HUBRG --> HUBCFG
+
+    DEV <-->|Peering bi-directional| HUBNET
+    STG <-->|Peering bi-directional| HUBNET
+    PRD <-->|Peering bi-directional| HUBNET
+
+    DEV --> AKSDEV
+    STG --> AKSSTG
+    PRD --> AKSPRD
+```
+
+```text
+                    +---------------------------------------------+
+                    | Bootstrap (tfstate)                         |
+                    | RG + Storage Account + containers           |
+                    +-------------------+-------------------------+
+                                        |
+                                        v
+                    +---------------------------------------------+
+                    | Hub Subscription                            |
+                    | rg-...                                      |
+                    |  - Hub VNet                                |
+                    |  - App Configuration (rg-...-config)       |
+                    +-------------------+-------------------------+
+                                        ^
+                peering bi-directional  |  peering bi-directional
+                                        |
+      +---------------------------------+----------------------------------+
+      |                                 |                                  |
+      v                                 v                                  v
++-------------+                 +-------------+                    +-------------+
+| Spoke DEV   |                 | Spoke STG   |                    | Spoke PRD   |
+| VNet/Subnets|                 | VNet/Subnets|                    | VNet/Subnets|
+| App Config  |                 | App Config  |                    | App Config  |
++------+------+                 +------+------+                    +------+------+
+       |                               |                                   |
+       v                               v                                   v
+ +------------+                    +------------+                     +------------+
+ | AKS DEV    |                    | AKS STG    |                     | AKS PRD    |
+ | 1..n states|                    | 1..n states|                     | 1..n states|
+ +------------+                    +------------+                     +------------+
+
+Global Policies (Management Group) apply across hub/spoke environments.
+```
 
 ## Repository Structure
 - `modules/`: reusable Terraform modules
@@ -61,6 +135,7 @@ Contribution guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
 - [Bootstrap](envs/bootstrap/README.md)
 - [Hub](envs/hub-tngs/README.md)
 - [Spoke (Generic)](envs/spoke/README.md)
+- [AKS](envs/aks/README.md)
 - [Peering Hub to Spokes](envs/peering/hub-spokes/README.md)
 - [Peering Spoke to Hub](envs/peering/spoke-hub/README.md)
 - [Global Policies](global-policies/README.md)
@@ -81,6 +156,8 @@ make plan STACK=envs/spoke TFVARS=tfvars/spoke-stg.tfvars
 make apply STACK=envs/spoke TFVARS=tfvars/spoke-stg.tfvars
 ```
 
+Important: when switching environment, re-run `make init` with the matching backend file before any `plan/apply` to avoid applying on the wrong state.
+
 ## Configuration Conventions
 - Backend files per environment: `backends/<env>-backend.hcl`
 - Variable files per spoke/environment: `tfvars/spoke-<env>.tfvars`
@@ -98,6 +175,7 @@ This avoids requiring dual-provider permissions in a single Terraform run.
 - Auth and context: `az-login`, `az-switch`, `az-whoami`, `az-list`
 - Per stack: `init`, `plan`, `apply`, `deploy`, `destroy`, `validate`
 - Helpers: `gen-spoke`, `gen-spoke-hub`, `gen-peering`
+- AKS generator: `gen-aks ENVIRONMENT=<dev|stg|prd> CLUSTER_KEY=<cluster-name> KUBERNETES_VERSION=<x.y>`
 
 See `make help` for full command list.
 
