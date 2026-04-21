@@ -113,3 +113,9 @@ variable "app_configuration_name" {
   type        = string
   default     = null
 }
+
+variable "bastion_sku" {
+  description = "SKU for the Azure Bastion Host"
+  type        = string
+  default     = "Developer"
+}
