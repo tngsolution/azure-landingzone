@@ -15,3 +15,9 @@ resource "azurerm_resource_group" "config" {
   location = var.location
   tags     = local.tags
 }
+
+resource "azurerm_resource_group" "compute" {
+  name     = local.resource_group_compute_name
+  location = var.location
+  tags     = local.tags
+}
