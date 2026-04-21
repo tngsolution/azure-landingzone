@@ -10,6 +10,10 @@ output "resource_group_config_name" {
   value = azurerm_resource_group.config.name
 }
 
+output "resource_group_compute_name" {
+  value = azurerm_resource_group.compute.name
+}
+
 output "spoke_vnet_id" {
   value = module.spoke_vnet.vnet_id
 }
@@ -36,4 +40,14 @@ output "app_configuration_name" {
 
 output "app_configuration_endpoint" {
   value = try(azurerm_app_configuration.spoke[0].endpoint, null)
+}
+
+output "route_table_id" {
+  description = "ID of the spoke-to-hub route table"
+  value       = azurerm_route_table.spoke_to_hub.id
+}
+
+output "route_table_name" {
+  description = "Name of the spoke-to-hub route table"
+  value       = azurerm_route_table.spoke_to_hub.name
 }
